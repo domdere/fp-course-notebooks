@@ -1,0 +1,6 @@
+#!/bin/sh -eux
+
+docker run -ti --rm \
+  --volume="$(pwd)/course:/notebooks" \
+  -p="8888:8888" \
+  squaresurf/ihaskell:125caedffc81092095d591ef979aca19aeb80e97
