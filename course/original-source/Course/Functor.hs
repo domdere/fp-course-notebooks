@@ -10,20 +10,14 @@ import Course.Optional
 import Course.List
 import qualified Prelude as P(fmap)
 
--- | All instances of the `Functor` type-class must satisfy two laws. These laws
--- are not checked by the compiler. These laws are given as:
---
--- * The law of identity
---   `∀x. (id <$> x) ≅ x`
---
--- * The law of composition
---   `∀f g x.(f . g <$> x) ≅ (f <$> (g <$> x))`
 class Functor f where
   -- Pronounced, eff-map.
   (<$>) ::
     (a -> b)
     -> f a
     -> f b
+  fmap :: (a -> b) -> f a -> f b
+  fmap = (<$>)
 
 infixl 4 <$>
 
@@ -41,8 +35,7 @@ instance Functor ExactlyOne where
     (a -> b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance ExactlyOne"
+  (<$>) f (ExactlyOne x) = ExactlyOne $ f x
 
 -- | Maps a function on the List functor.
 --
@@ -56,8 +49,7 @@ instance Functor List where
     (a -> b)
     -> List a
     -> List b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance List"
+  (<$>) = map
 
 -- | Maps a function on the Optional functor.
 --
@@ -71,8 +63,8 @@ instance Functor Optional where
     (a -> b)
     -> Optional a
     -> Optional b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance Optional"
+  (<$>) f Empty = Empty
+  (<$>) f (Full x) = Full $ f x
 
 -- | Maps a function on the reader ((->) t) functor.
 --
@@ -83,8 +75,7 @@ instance Functor ((->) t) where
     (a -> b)
     -> ((->) t a)
     -> ((->) t b)
-  (<$>) =
-    error "todo: Course.Functor (<$>)#((->) t)"
+  (<$>) = (.)
 
 -- | Anonymous map. Maps a constant value on a functor.
 --
@@ -99,8 +90,7 @@ instance Functor ((->) t) where
   a
   -> f b
   -> f a
-(<$) =
-  error "todo: Course.Functor#(<$)"
+(<$) x = fmap $ const x
 
 -- | Anonymous map producing unit value.
 --
@@ -119,8 +109,7 @@ void ::
   Functor f =>
   f a
   -> f ()
-void =
-  error "todo: Course.Functor#void"
+void = (() <$)
 
 -----------------------
 -- SUPPORT LIBRARIES --
